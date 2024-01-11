@@ -2,8 +2,7 @@ from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Weaviate
 import weaviate
-from misc import json_print
-
+from components.misc import json_print
 
 def connect_to_vector_db():
     # Connect Weaviate Cluster
@@ -13,8 +12,13 @@ def connect_to_vector_db():
         url=WEAVIATE_URL,
         auth_client_secret=auth_config
     )
-    return print(client.is_ready()) # Should return 'True'
 
+    if client.is_ready():
+        print("Client is ready")
+    else:
+        print("Could not connect to client")
+
+    return client
 
 def update_vector_db():
     pass
@@ -29,7 +33,7 @@ def create_vector_db():
     WEAVIATE_URL = "https://podcast-qa-rag-wwc432v0.weaviate.network"
     client = weaviate.Client(
         url=WEAVIATE_URL,
-        additional_headers={"X-HuggingFace-Api-Key": "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"},
+        additional_headers={"X-HuggingFace-Api-Key": "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"},
         auth_client_secret=auth_config
     )
 
@@ -44,7 +48,10 @@ def create_vector_db():
                 "vectorizer": "text2vec-huggingface",
                 "moduleConfig": {
                     "text2vec-huggingface": {
-                        "model": "BAAI/bge-base-en-v1.5"
+                        "model": "BAAI/bge-base-en-v1.5",
+                        "options": {
+                            "waitForModel": True
+                            }
                     }
                 },
                 "properties": [
@@ -78,19 +85,13 @@ def create_vector_db():
             
             properties = {
                 "content": d.page_content,
-                "metadata": d.metadata,
+                "metadata": d.metadata['source'],
             }
             
             batch.add_data_object(
                 data_object=properties,
                 class_name="Chatbot"
             )
-    
-    count = client.query.aggregate("Chatbot").with_meta_count().do()
-    json_print(count)
-
-    # Print vectors
-    # print_vectors(client)
 
     return client
 
@@ -107,8 +108,8 @@ def preprocess_data():
 
     # Chunk text
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=1000,
+        chunk_overlap=100
     )
     chunked_documents = text_splitter.split_documents(data)
 
@@ -140,3 +141,8 @@ def print_vectors(client):
           .do())
 
     json_print(result)
+
+
+def print_obj_count(client):
+    count = client.query.aggregate("Chatbot").with_meta_count().do()
+    json_print(count)

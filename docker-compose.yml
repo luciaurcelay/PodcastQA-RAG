@@ -13,5 +13,5 @@ services:
       ENABLE_MODULES: text2vec-huggingface
       DEFAULT_VECTORIZER_MODULE: text2vec-huggingface
       CLUSTER_HOSTNAME: 'node1'
-      HUGGINGFACE_APIKEY: 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
+      HUGGINGFACE_APIKEY: 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
       ENABLE_CUDA: 1
