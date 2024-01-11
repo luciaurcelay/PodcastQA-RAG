@@ -1,0 +1,17 @@
+version: '3.4'
+services:
+  weaviate:
+    image: semitechnologies/weaviate:1.23.2
+    restart: on-failure:0
+    ports:
+     - 8080:8080
+     - 50051:50051
+    environment:
+      QUERY_DEFAULTS_LIMIT: 20
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: "./data"
+      ENABLE_MODULES: text2vec-huggingface
+      DEFAULT_VECTORIZER_MODULE: text2vec-huggingface
+      CLUSTER_HOSTNAME: 'node1'
+      HUGGINGFACE_APIKEY: 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
+      ENABLE_CUDA: 1
