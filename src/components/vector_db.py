@@ -99,7 +99,7 @@ def create_vector_db():
 def preprocess_data():
     # Load data
     loader = CSVLoader(
-        file_path='data\podcasts.csv',
+        file_path='src\data\podcasts.csv',
         source_column="episode_name",
         csv_args={
             "delimiter": ",",}

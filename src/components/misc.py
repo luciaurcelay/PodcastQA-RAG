@@ -1,11 +1,7 @@
-def query_podcast(client, query):
-    # Retrieve context
-    context = dense_search(client, query, top_k=3)
+import json
 
-    # Generat answer
-    
-    return context
-
+def json_print(data):
+    print(json.dumps(data, indent=2))
 
 def dense_search(client, query, top_k=2):
     response = (
