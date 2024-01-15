@@ -1,0 +1,8 @@
+llm: "microsoft/phi-1_5" # microsoft/phi-2, 'mistralai/Mistral-7B-Instruct-v0.2'
+chunking:
+  chunk_size: 20
+  chunck_overlap: 5
+search: dense # sparse, hybrid
+k_top_chunks: 3
+rerank: False
+memory_window: 6

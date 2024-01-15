@@ -1,20 +1,21 @@
 from components.vector_db import create_vector_db, connect_to_vector_db
-from components.llms import create_chain
+from components.langchain_utils import create_chain
 from components.langchain_helper import query_podcast
 import box
 import yaml
+import os
 
 def main():
     # Import config vars
-    with open('config.yml', 'r', encoding='utf8') as ymlfile:
-        cfg = box.Box(yaml.safe_load(ymlfile))
+    # with open('config.yaml', 'r', encoding='utf8') as ymlfile:
+        # cfg = box.Box(yaml.safe_load(ymlfile))
 
     # Create/initialize client
     client = connect_to_vector_db()
     # Initialize chain
     rag_chain = create_chain(client)
     # Define query
-    query = "What are the ingredients of Benedict Cumberbatch Eggs?"
+    query = "Where was Kant born?"
     # Run chain
     output = rag_chain.invoke(query)
     print(output)
