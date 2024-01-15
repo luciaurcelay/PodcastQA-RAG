@@ -1,6 +1,5 @@
 from components.vector_db import create_vector_db, connect_to_vector_db
-from components.langchain_utils import create_chain
-from components.langchain_helper import query_podcast
+from components.llms import create_chain
 import box
 import yaml
 import os

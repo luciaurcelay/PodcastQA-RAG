@@ -25,7 +25,7 @@ def create_chain(client):
 def create_prompt_template():
     # Create prompt template
     prompt_template = """
-    ### [INST] Instruction: Answer the question delimited by triple backticks. \
+    ### Instruction: Answer the question delimited by triple backticks. \
     Base your answer only on the context delimited by triple backticks. \
 
     ### QUESTION:
@@ -35,7 +35,7 @@ def create_prompt_template():
     ### CONTEXT:
     ```{context} ```
 
-    [/INST]"""
+    """
 
     # Create prompt template
     prompt_template = PromptTemplate(
