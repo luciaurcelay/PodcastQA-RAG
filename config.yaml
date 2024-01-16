@@ -1,4 +1,4 @@
-llm: "microsoft/phi-1_5" # microsoft/phi-2, 'mistralai/Mistral-7B-Instruct-v0.2'
+llm: "Open-Orca/oo-phi-1_5" # "microsoft/phi-1_5" microsoft/phi-2, 'mistralai/Mistral-7B-Instruct-v0.2'
 chunking:
   chunk_size: 20
   chunck_overlap: 5

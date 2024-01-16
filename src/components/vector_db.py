@@ -65,6 +65,17 @@ def create_vector_db():
                                 "vectorizePropertyName": False,
                             },
                         }
+                    },
+                    {
+                        "name": "metadata",
+                        "dataType": ["text"],
+                        "description": "Metadata of the chunk",
+                        "moduleConfig": {
+                            "text2vec-huggingface": {
+                                "skip": True,
+                                "vectorizePropertyName": False,
+                            },
+                        }
                     }
                 ]
             }
