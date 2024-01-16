@@ -3,22 +3,26 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Weaviate
 import weaviate
 from components.misc import json_print
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
+load_dotenv(dotenv_path)
+auth_config = weaviate.AuthApiKey(api_key=os.environ.get("WEAVIATE_API_KEY"))
+WEAVIATE_URL = os.environ.get("WEAVIATE_URL")
 
 def connect_to_vector_db():
-    # Connect Weaviate Cluster
-    auth_config = weaviate.AuthApiKey(api_key="u2gA0A5jja85iEUcKPal79U9wB9evnsfAYjA")
-    WEAVIATE_URL = "https://podcast-qa-rag-wwc432v0.weaviate.network"
     client = weaviate.Client(
         url=WEAVIATE_URL,
         auth_client_secret=auth_config
     )
-
     if client.is_ready():
         print("Client is ready")
     else:
         print("Could not connect to client")
-
     return client
+
 
 def update_vector_db():
     pass
@@ -27,16 +31,12 @@ def update_vector_db():
 def create_vector_db():
     # Preprocess data
     data = preprocess_data()
-
     # Connect Weaviate Cluster
-    auth_config = weaviate.AuthApiKey(api_key="u2gA0A5jja85iEUcKPal79U9wB9evnsfAYjA")
-    WEAVIATE_URL = "https://podcast-qa-rag-wwc432v0.weaviate.network"
     client = weaviate.Client(
         url=WEAVIATE_URL,
-        additional_headers={"X-HuggingFace-Api-Key": "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"},
+        additional_headers={"X-HuggingFace-Api-Key": os.environ.get("HUGGINGFACEHUB_API_TOKEN")},
         auth_client_secret=auth_config
     )
-
     # Define schema
     if client.schema.exists("Chatbot"):
         client.schema.delete_class("Chatbot")
@@ -73,26 +73,18 @@ def create_vector_db():
 
     # Create defined schema
     client.schema.create(schema)
-
-    # Print schema information
-    # print(client.schema.get("Chatbot"))
-
     # Populate db with data
     with client.batch.configure(batch_size=5) as batch:
         for i, d in enumerate(data):  # Batch import data
-            
             print(f"importing doc: {i+1}")
-            
             properties = {
                 "content": d.page_content,
                 "metadata": d.metadata['source'],
             }
-            
             batch.add_data_object(
                 data_object=properties,
                 class_name="Chatbot"
             )
-
     return client
 
 

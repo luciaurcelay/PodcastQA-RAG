@@ -11,13 +11,14 @@ def main():
 
     # Create/initialize client
     client = connect_to_vector_db()
+    '''
     # Initialize chain
     rag_chain = create_chain(client)
     # Define query
     query = "Where was Kant born?"
     # Run chain
     output = rag_chain.invoke(query)
-    print(output)
+    print(output)'''
     
 
     '''
