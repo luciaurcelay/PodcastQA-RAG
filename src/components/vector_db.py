@@ -6,11 +6,13 @@ from components.misc import json_print
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+from . import misc
 
 dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
 load_dotenv(dotenv_path)
 auth_config = weaviate.AuthApiKey(api_key=os.environ.get("WEAVIATE_API_KEY"))
 WEAVIATE_URL = os.environ.get("WEAVIATE_URL")
+
 
 def connect_to_vector_db():
     client = weaviate.Client(
@@ -28,9 +30,9 @@ def update_vector_db():
     pass
 
 
-def create_vector_db():
+def create_vector_db(chunk_size, chunk_overlap):
     # Preprocess data
-    data = preprocess_data()
+    data = preprocess_data(chunk_size, chunk_overlap)
     # Connect Weaviate Cluster
     client = weaviate.Client(
         url=WEAVIATE_URL,
@@ -67,9 +69,31 @@ def create_vector_db():
                         }
                     },
                     {
-                        "name": "metadata",
+                        "name": "show_name",
                         "dataType": ["text"],
-                        "description": "Metadata of the chunk",
+                        "description": "Name of the show",
+                        "moduleConfig": {
+                            "text2vec-huggingface": {
+                                "skip": True,
+                                "vectorizePropertyName": False,
+                            },
+                        }
+                    },
+                    {
+                        "name": "episode_name",
+                        "dataType": ["text"],
+                        "description": "Name of the episode",
+                        "moduleConfig": {
+                            "text2vec-huggingface": {
+                                "skip": True,
+                                "vectorizePropertyName": False,
+                            },
+                        }
+                    },
+                    {
+                        "name": "row",
+                        "dataType": ["int"],
+                        "description": "Row of the csv",
                         "moduleConfig": {
                             "text2vec-huggingface": {
                                 "skip": True,
@@ -90,7 +114,9 @@ def create_vector_db():
             print(f"importing doc: {i+1}")
             properties = {
                 "content": d.page_content,
-                "metadata": d.metadata['source'],
+                "show_name": d.metadata['show_name'],
+                "episode_name": d.metadata['episode_name'],
+                "row": d.metadata['row'],
             }
             batch.add_data_object(
                 data_object=properties,
@@ -99,20 +125,21 @@ def create_vector_db():
     return client
 
 
-def preprocess_data():
+def preprocess_data(chunk_size, chunk_overlap):
     # Load data
-    loader = CSVLoader(
+    loader = misc.CustomCSVLoader(
         file_path='src\data\podcasts.csv',
-        source_column="episode_name",
+        # source_column="episode_name",
+        metadata_columns = ["show_name","episode_name"],
         csv_args={
-            "delimiter": ",",}
+            "delimiter": ","}
         )
     data = loader.load()
 
     # Chunk text
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
     )
     chunked_documents = text_splitter.split_documents(data)
 

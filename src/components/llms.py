@@ -23,7 +23,7 @@ def load_model(model_name):
         do_sample=True,
         repetition_penalty=1.1,
         return_full_text=True,
-        max_new_tokens=100,
+        max_new_tokens=250,
         device=0,
     )
     model_pipeline = HuggingFacePipeline(pipeline=text_generation_pipeline)
