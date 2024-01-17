@@ -152,7 +152,7 @@ def print_vectors(client):
           .with_limit(1)
           .do())
 
-    json_print(result)
+    utils.json_print(result)
 
 
 def print_obj_count(client):

@@ -4,7 +4,8 @@ from src.components.vector_db import create_vector_db, connect_to_vector_db, pre
 from src.components.langchain_utils import create_chain
 import box
 import yaml
-from os.path import join, dirname
+from dataclasses import dataclass
+
 
 
 def get_show_names():
@@ -25,17 +26,16 @@ def handle_userinput(query):
     with st.spinner("Generating answer"):
         # Run chain
         response = st.session_state.rag_chain.invoke(query)
-    print(response.keys())
-    print(response)
     st.session_state.chat_history = response['chat_history']
-    user_message = st.chat_message("user")
-    assistant_message = st.chat_message("assistant")
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            user_message.write(message.content)  
-        else:
-            assistant_message.write(message.content)  
+    st.session_state.messages.append(Message(actor="user", payload=query))
+    st.session_state.messages.append(Message(actor="assistant", payload=response["answer"]))
+    st.chat_message("user").write(query)
+    st.chat_message("assistant").write(response["answer"])
     
+@dataclass
+class Message:
+    actor: str
+    payload: str
 
 def main():
 
@@ -53,10 +53,13 @@ def main():
         st.session_state.rag_chain = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
 
     with st.sidebar:
         # Generate dropdown menus
-        st.header("Time to select 🕹")
+        st.header("Time to select!")
         show_names, df = get_show_names()
         selected_show = st.selectbox('Select show name:',  ['Any'] + list(show_names))
         filtered_df = df[df['show_name'] == selected_show]
@@ -79,13 +82,13 @@ def main():
                     cfg.memory.window
                     )
                 
-
+    for msg in st.session_state.messages:
+        st.chat_message(msg.actor).write(msg.payload)
+                
     query = st.text_input("Ask a question: ", key="user_input")
 
     if query:
         handle_userinput(query)
-        
-            
 
 
 if __name__ == '__main__':
