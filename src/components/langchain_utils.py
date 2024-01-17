@@ -1,29 +1,24 @@
 from langchain.vectorstores.weaviate import Weaviate
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain, ConversationalRetrievalChain
-from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
+from langchain.chains import ConversationalRetrievalChain
+from langchain.retrievers.weaviate_hybrid_search import WeaviateHybridSearchRetriever
 from langchain_community.llms import HuggingFaceHub
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
-from langchain_core.runnables import RunnableParallel
 from . import llms 
 from os.path import join, dirname
-from operator import itemgetter
 from dotenv import load_dotenv
 
 dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
 load_dotenv(dotenv_path)
 
-def create_chain(client, show_name, episode_name, k_top_chunks, llm_type, llm_model, memory_window):
-    # Initialize retriever
-    vectorstore = Weaviate(
-        client, 
-        "Chatbot", 
-        "content", 
-        attributes=["show_name", "episode_name", "row"]
-        )
+def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_chunks, llm_type, llm_model, memory_window):
     # Define filters
     where_filter = get_filters(show_name, episode_name)
+    # Initialize retriever
+    if search_strategy == "dense":
+        retriever = dense_search(client, k_top_chunks, where_filter)
+    elif search_strategy == "hybrid":
+        retriever = hybrid_search(client, k_top_chunks, where_filter, alpha)
     # Generate prompt template
     prompt_template = create_prompt_template(llm_model)
     # Load LLM
@@ -41,13 +36,37 @@ def create_chain(client, show_name, episode_name, k_top_chunks, llm_type, llm_mo
     rag_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
         memory = memory,
-        retriever = vectorstore.as_retriever(k=k_top_chunks, search_kwargs={"where_filter": where_filter}),
+        retriever = retriever,
         verbose = True,
         combine_docs_chain_kwargs={'prompt': prompt_template},
         get_chat_history = lambda h : h,
         return_source_documents=True
     )
     return rag_chain
+
+
+def dense_search(client, k_top_chunks, where_filter):
+    vectorstore = Weaviate(
+        client, 
+        "Chatbot", 
+        "content", 
+        attributes=["show_name", "episode_name", "row"]
+        )
+    retriever = vectorstore.as_retriever(k=k_top_chunks, search_kwargs={"where_filter": where_filter})
+    return retriever
+
+
+def hybrid_search(client, k_top_chunks, where_filter, alpha):
+    retriever = WeaviateHybridSearchRetriever(
+        client=client,
+        alpha=alpha,
+        index_name="Chatbot",
+        text_key="content",
+        k=k_top_chunks, 
+        attributes=["show_name", "episode_name", "row"],
+        search_kwargs={"where_filter": where_filter}
+    )
+    return retriever
 
 
 def get_filters(show_name, episode_name):
@@ -68,7 +87,9 @@ def get_filters(show_name, episode_name):
                 "valueString": episode_name,
                 }
             filters.append(episode_name_filter)
-    return filters
+    filter = {"operator": "And", "operands": filters}
+    return filter
+
 
 def create_prompt_template(llm_model):
     if llm_model == "Open-Orca/oo-phi-1_5":

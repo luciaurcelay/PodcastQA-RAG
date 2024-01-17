@@ -7,7 +7,9 @@ llmx:
 chunking:
   chunk_size: 1000
   chunk_overlap: 100
-search: dense # sparse, hybrid
+search: 
+  search_strategy: dense # dense, hybrid
+  alpha: 0.5 # 1 pure vector search, 0 pure keyword search
 k_top_chunks: 3
 rerank: False
 memory:

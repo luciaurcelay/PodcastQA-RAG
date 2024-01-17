@@ -17,7 +17,17 @@ def main():
     # Create/initialize client
     client = connect_to_vector_db()
     # Initialize chain
-    rag_chain = create_chain(client, "Any", "Any", cfg.k_top_chunks, cfg.llm.type, cfg.llm.model, cfg.memory.window)
+    rag_chain = create_chain(
+        client, 
+        "Philosophize That", 
+        "Any", 
+        cfg.search.search_strategy, 
+        cfg.search.alpha, 
+        cfg.k_top_chunks, 
+        cfg.llm.type, 
+        cfg.llm.model, 
+        cfg.memory.window
+        )
     # Define query
     query = "Which fishes are the seven fishes??"
     # Run chain
