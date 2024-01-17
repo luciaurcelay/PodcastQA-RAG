@@ -2,11 +2,10 @@ from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Weaviate
 import weaviate
-from components.misc import json_print
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from . import misc
+from . import utils
 
 dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
 load_dotenv(dotenv_path)
@@ -127,7 +126,7 @@ def create_vector_db(chunk_size, chunk_overlap):
 
 def preprocess_data(chunk_size, chunk_overlap):
     # Load data
-    loader = misc.CustomCSVLoader(
+    loader = utils.CustomCSVLoader(
         file_path='src\data\podcasts.csv',
         # source_column="episode_name",
         metadata_columns = ["show_name","episode_name"],
@@ -146,23 +145,6 @@ def preprocess_data(chunk_size, chunk_overlap):
     return chunked_documents
 
 
-def create_weaviate_db_instance(client, data):
-    #Lload text into the vectorstore
-    vector_db = Weaviate(client, "Chatbot", "content", attributes=["source"])
-
-    # load text into the vectorstore
-    text_meta_pair = [(doc.page_content, doc.metadata) for doc in data]
-    texts, meta = list(zip(*text_meta_pair))
-    vector_db.add_texts(texts, meta)
-
-    # Query
-    query = "what is a vectorstore?"
-    # Retrieve text related to the query
-    docs = vector_db.similarity_search(query, top_k=20)
-
-    return vector_db
-
-
 def print_vectors(client):
     result = (client.query
           .get("Chatbot", ["content"])
@@ -175,4 +157,4 @@ def print_vectors(client):
 
 def print_obj_count(client):
     count = client.query.aggregate("Chatbot").with_meta_count().do()
-    json_print(count)
+    utils.json_print(count)

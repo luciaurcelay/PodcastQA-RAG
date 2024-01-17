@@ -30,8 +30,13 @@ def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_
             model_kwargs={"temperature":0.5, "max_length":512}
             )
     # Instantiate ConversationBufferMemory
-    memory = ConversationBufferWindowMemory(
-        k=memory_window, memory_key="chat_history", input_key="question", output_key='answer', return_messages=True)
+    memory = ConversationBufferMemory(
+        # k=memory_window, 
+        memory_key="chat_history", 
+        input_key="question", 
+        output_key='answer', 
+        return_messages=True
+        )
     # Define RAG chain
     rag_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
@@ -87,8 +92,16 @@ def get_filters(show_name, episode_name):
                 "valueString": episode_name,
                 }
             filters.append(episode_name_filter)
-    filter = {"operator": "And", "operands": filters}
-    return filter
+    if len(filters) == 0:
+        return None
+    elif len(filters) == 1:
+        filter = filters[0]
+        return filter
+    elif len(filters) == 2:
+        filter = {"operator": "And", "operands": filters}
+        return filter
+    else:
+        return None
 
 
 def create_prompt_template(llm_model):
