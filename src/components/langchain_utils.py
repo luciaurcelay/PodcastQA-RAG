@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
 load_dotenv(dotenv_path)
 
-def create_chain(client, k_top_chunks, llm_type, llm_model, memory_window):
+def create_chain(client, show_name, episode_name, k_top_chunks, llm_type, llm_model, memory_window):
     # Initialize retriever
     vectorstore = Weaviate(
         client, 
@@ -22,7 +22,8 @@ def create_chain(client, k_top_chunks, llm_type, llm_model, memory_window):
         "content", 
         attributes=["show_name", "episode_name", "row"]
         )
-    retriever = vectorstore.as_retriever(k=k_top_chunks)
+    # Define filters
+    where_filter = get_filters(show_name, episode_name)
     # Generate prompt template
     prompt_template = create_prompt_template(llm_model)
     # Load LLM
@@ -35,18 +36,39 @@ def create_chain(client, k_top_chunks, llm_type, llm_model, memory_window):
             )
     # Instantiate ConversationBufferMemory
     memory = ConversationBufferWindowMemory(
-        k=memory_window, memory_key="chat_history", input_key="question", return_messages=True)
+        k=memory_window, memory_key="chat_history", input_key="question", output_key='answer', return_messages=True)
     # Define RAG chain
     rag_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
         memory = memory,
-        retriever = retriever,
+        retriever = vectorstore.as_retriever(k=k_top_chunks, search_kwargs={"where_filter": where_filter}),
         verbose = True,
         combine_docs_chain_kwargs={'prompt': prompt_template},
-        get_chat_history = lambda h : h
+        get_chat_history = lambda h : h,
+        return_source_documents=True
     )
     return rag_chain
 
+
+def get_filters(show_name, episode_name):
+    filters = []
+    # Add filter for show name
+    if show_name != "Any":
+        show_name_filter = {
+            "operator": "Equal",
+            "path": ["show_name"],
+            "valueString": show_name,
+            }
+        filters.append(show_name_filter)
+        # Add filter for episode name
+        if episode_name != "Any":
+            episode_name_filter = {
+                "operator": "Equal",
+                "path": ["episode_name"],
+                "valueString": episode_name,
+                }
+            filters.append(episode_name_filter)
+    return filters
 
 def create_prompt_template(llm_model):
     if llm_model == "Open-Orca/oo-phi-1_5":
