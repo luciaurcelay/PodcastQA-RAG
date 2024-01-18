@@ -59,7 +59,7 @@ To use the MultiPDF Chat App, follow these steps:
 ## Snapshots
 ----------------------------
 **Interface**
-![Screenshot 1](https://github.com/luciaurcelay/PodcastQA-RAG/assets/img1.png)
+![Screenshot 1](assets/img1.png)
 **See sources feature**
-![Screenshot 1](https://github.com/luciaurcelay/PodcastQA-RAG/assets/img1.png)
+![Screenshot 1](assets/img2.png)
 
