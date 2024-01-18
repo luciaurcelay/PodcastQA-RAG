@@ -1,9 +1,9 @@
-llmx:
-  typex: "local" # "local"
-  modelx: "Open-Orca/oo-phi-1_5" # "google/flan-t5-xxl" "meta-llama/Llama-2-70b-chat" "Open-Orca/oo-phi-1_5"  "microsoft/phi-1_5" microsoft/phi-2, 'mistralai/Mistral-7B-Instruct-v0.2'
 llm:
-  type: "api" # "local"
-  model: "google/flan-t5-xxl"
+  type: "local" # "local"
+  model: "Open-Orca/oo-phi-1_5" # "google/flan-t5-xxl" "meta-llama/Llama-2-70b-chat" "Open-Orca/oo-phi-1_5"  "microsoft/phi-1_5" microsoft/phi-2, 'mistralai/Mistral-7B-Instruct-v0.2'
+llmx:
+  typex: "api" # "local"
+  modelx: "google/flan-t5-xxl"
 chunking:
   chunk_size: 1000
   chunk_overlap: 100
@@ -13,5 +13,4 @@ search:
 k_top_chunks: 3
 rerank: False
 memory:
-  type: ConversationBufferWindowMemory # ConversationBufferMemory Entity ConversationSummaryMemory
   window: 5

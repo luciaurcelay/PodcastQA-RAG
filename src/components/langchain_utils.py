@@ -30,8 +30,8 @@ def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_
             model_kwargs={"temperature":0.5, "max_length":512}
             )
     # Instantiate ConversationBufferMemory
-    memory = ConversationBufferMemory(
-        # k=memory_window, 
+    memory = ConversationBufferWindowMemory(
+        k=memory_window, 
         memory_key="chat_history", 
         input_key="question", 
         output_key='answer', 
