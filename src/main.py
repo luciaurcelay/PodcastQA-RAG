@@ -32,11 +32,6 @@ def main():
     query = "Which fishes are the seven fishes??"
     # Run chain
     output = rag_chain.invoke(query)
-    print(output)
-    print(output.keys())
-    '''query2 = "Which one of them is simmered in tomato sauce garlic and red pepper flakes?"
-    output2 = rag_chain.run(query2)
-    print(output2)'''
     question = output['question']
     answer = output['answer']
     context = output['source_documents']
