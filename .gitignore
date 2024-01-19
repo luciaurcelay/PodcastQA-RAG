@@ -1,6 +1,6 @@
 __pycache__/
 components/__pycache__/
-env/
+.env
 venv/
 .streamlit/
 old-requirements.txt
