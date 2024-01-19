@@ -2,7 +2,7 @@
 
 ## Introduction
 ------------
-The Podcast QA-RAG is an application that lets you chat with transcriptions of fictional podcasts. You can inquire about episode content using natural language, and the app will provide relevant responses from the documents. This project aims to enhance streaming apps, enabling users to ask questions about podcasts they haven't listened to, eliminating the need to manually search for specific information in episodes.
+The Podcast QA-RAG is an application that lets you chat with transcriptions of fictional podcasts. You can ask about any episode content using natural language, and the system will provide relevant responses from the documents. This project aims to enhance streaming apps, enabling users to ask questions about specific content of podcasts, eliminating the need to manually search for that information through the episodes.
 
 The app is primarily built using LangChain, following the Retrieval Augmented Generation Framework. Weaviate is employed to create a vector database for indexing and querying the data. Additionally, a language model (local or API-based) generates coherent answers to user queries. The RAG system includes built-in memory to track conversations, and users can view retrieved sources for transparency purposes.
 
