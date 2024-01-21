@@ -13,13 +13,13 @@ def get_show_names():
 
 
 def print_sources(response):
-    with st.expander("See sources"):
+    with st.expander("Check sources"):
         for d in response["source_documents"]:  
-            with st.chat_message("assistant"):
-                st.markdown(f"Show name: {d.metadata['show_name']}")
-                st.markdown(f"Episode name: {d.metadata['episode_name']}")
-                st.markdown(f"Minute: {d.metadata['row']}")
-                st.markdown(f"Content: {d.page_content}")
+            st.markdown(f"Show name: {d.metadata['show_name']}")
+            st.markdown(f"Episode name: {d.metadata['episode_name']}")
+            st.markdown(f"Minute: {d.metadata['row']}")
+            st.markdown(f"Content: {d.page_content}")
+            st.markdown(f"\n")
 
 
 def main():
@@ -40,6 +40,10 @@ def main():
     for message in st.session_state.messages:
         with st.chat_message(message['role']):
             st.markdown(message['content'])
+            print(message['role'])
+            if message['role'] == "assistant":
+                print("true")
+                print_sources(message['response'])
 
     query = st.chat_input("Ask a question")
     if query:
@@ -50,8 +54,10 @@ def main():
             response = st.session_state.rag_chain.invoke(query)
             with st.chat_message("assistant"):
                 st.markdown(response["answer"])
-            print_sources(response)
-            st.session_state.messages.append({"role": "assistant", "content": response["answer"]})
+                print_sources(response)
+            st.session_state.messages.append({"role": "assistant", 
+                                              "content": response["answer"], 
+                                              "response": response})
 
     with st.sidebar:
         st.header("Select show and episode 🎧")

@@ -1,6 +1,6 @@
 llm:
-  type: "api" # "local"
-  model: "meta-llama/Llama-2-70b-chat-hf" # "google/flan-t5-xxl" "Open-Orca/oo-phi-1_5"
+  type: "local" # "api" "local"
+  model: "Open-Orca/oo-phi-1_5" # "google/flan-t5-xxl" "lmsys/vicuna-7b-v1.5" "Open-Orca/oo-phi-1_5"
 chunking:
   chunk_size: 1000
   chunk_overlap: 100
