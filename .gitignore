@@ -3,4 +3,3 @@ components/__pycache__/
 .env
 venv/
 .streamlit/
-old-requirements.txt

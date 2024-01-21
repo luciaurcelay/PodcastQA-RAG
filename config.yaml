@@ -1,13 +1,13 @@
 llm:
   type: "api" # "local"
-  model: "google/flan-t5-xxl"
+  model: "meta-llama/Llama-2-70b-chat-hf" # "google/flan-t5-xxl" "Open-Orca/oo-phi-1_5"
 chunking:
   chunk_size: 1000
   chunk_overlap: 100
 search: 
   search_strategy: hybrid # dense, hybrid
-  alpha: 0.5 # 1 pure vector search, 0 pure keyword search
+  alpha: 0.6 # 1 pure vector search, 0 pure keyword search
 k_top_chunks: 3
-rerank: False
+rerank: False # to be implemented
 memory:
   window: 5
