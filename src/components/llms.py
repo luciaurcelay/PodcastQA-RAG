@@ -23,7 +23,7 @@ def load_model(model_name):
         do_sample=True,
         repetition_penalty=1.1,
         return_full_text=True,
-        max_new_tokens=250,
+        max_new_tokens=500,
         device=0,
     )
     model_pipeline = HuggingFacePipeline(pipeline=text_generation_pipeline)
@@ -65,7 +65,7 @@ def load_quantized_model(model_name):
         temperature=0.2,
         repetition_penalty=1.1,
         return_full_text=True,
-        max_new_tokens=1000,
+        max_new_tokens=500,
     )
     # Initialize pipeline
     llm_pipeline = HuggingFacePipeline(pipeline=text_generation_pipeline)

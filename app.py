@@ -7,7 +7,7 @@ import yaml
 
 
 def get_show_names():
-    df = pd.read_csv('src\data\podcasts.csv')
+    df = pd.read_csv('src/data/podcasts.csv')
     show_names = df['show_name'].unique()
     return show_names, df
 
