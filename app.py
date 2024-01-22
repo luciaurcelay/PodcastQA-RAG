@@ -80,6 +80,7 @@ def main():
                     cfg.search.alpha, 
                     cfg.k_top_chunks, 
                     cfg.llm.type, 
+                    cfg.llm.quant,
                     cfg.llm.model, 
                     cfg.memory.window
                     )

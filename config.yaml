@@ -1,6 +1,7 @@
 llm:
   type: "local" # "api" "local"
-  model: "Open-Orca/oo-phi-1_5" # "google/flan-t5-xxl" "lmsys/vicuna-7b-v1.5" "Open-Orca/oo-phi-1_5"
+  quant: True
+  model: "Open-Orca/oo-phi-1_5" # "mistralai/Mistral-7B-Instruct-v0.1" "google/flan-t5-xxl" "lmsys/vicuna-7b-v1.5" "Open-Orca/oo-phi-1_5"
 chunking:
   chunk_size: 1000
   chunk_overlap: 100

@@ -56,13 +56,14 @@ def load_quantized_model(model_name):
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         quantization_config=bnb_config,
+        trust_remote_code=True
     )
     # Define text generation pipeline (from transformers library)
     text_generation_pipeline = pipeline(
         model=model,
         tokenizer=tokenizer,
         task="text-generation",
-        temperature=0.2,
+        temperature=0.1,
         repetition_penalty=1.1,
         return_full_text=True,
         max_new_tokens=500,

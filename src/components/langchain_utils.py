@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 dotenv_path = dotenv_path = join(dirname(dirname(dirname(__file__))), '.env')
 load_dotenv(dotenv_path)
 
-def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_chunks, llm_type, llm_model, memory_window):
+def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_chunks, llm_type, llm_quant, llm_model, memory_window):
     # Define filters
     where_filter = get_filters(show_name, episode_name)
     # Initialize retriever
@@ -23,7 +23,10 @@ def create_chain(client, show_name, episode_name, search_strategy, alpha, k_top_
     prompt_template = create_prompt_template(llm_model)
     # Load LLM
     if llm_type == "local":
-        llm = llms.load_model(llm_model)
+        if llm_quant:
+            llm = llms.load_quantized_model(llm_model)
+        else:
+            llm = llms.load_model(llm_model)
     elif llm_type == "api":
         llm = HuggingFaceHub(
             repo_id=llm_model, 
